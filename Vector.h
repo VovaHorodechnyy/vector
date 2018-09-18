@@ -1,72 +1,49 @@
-
 #ifndef VECTOR_H
 #define VECTOR_H
 //https://gist.github.com/jeetsukumaran/307264
 
 #include<stdexcept>
 #include<iterator>
+#include"itearator.h"
+#include"reverse_iterator.h"
+#include"const_iterator.h"
+
 template<class Type>
 class CVector
 {
-private:
+	private:
 
-	const size_t DEFAULT_SIZE_ARRAY = 100;
-	const size_t MAX_SIZE=64936;
-	size_t m_current_sizem;
-	size_t m_count;
-	Type*m_aArray;
-
-public:
+		const size_t DEFAULT_SIZE_ARRAY = 100;
+		const size_t MAX_SIZE=64936;
+		size_t m_current_sizem;
+		size_t m_count;
+		Type*m_aArray;
+		
+	public:
 //	typedef const_iterator const_iterator;
 	//typedef iterator iterator;
+	//typedef iterator<Type> iterator;
+	using const_iterator = const_iterator<Type>;
+	using iterator = iterator<Type>;
+	using  const_reverse_iterator = reverse_iterator<const Type>;
+	using  reverse_iterator = reverse_iterator<Type>;
 	
 	
-
-	class const_iterator : public std::iterator<std::input_iterator_tag, Type>
-	{
-
-	public:
-		typedef std::forward_iterator_tag iterator_category;
-		const_iterator(Type* aPtr) :m_pPtr(aPtr) {}
-		const_iterator operator++() { const_iterator it = *this; ++m_pPtr; return it; }
-		const_iterator operator++(int junk) { ++m_pPtr; return *this; }
-		const Type& operator*() const { return *m_pPtr; }
-		const Type* operator->() const { return m_pPtr; }
-		bool operator==(const const_iterator &cit) const { return m_pPtr == cit.m_pPtr; }
-		bool operator!=(const const_iterator &cit)  const { return m_pPtr != cit.m_pPtr; }
-	private:
-		Type* m_pPtr;
-
-	};
-
-	class iterator : public std::iterator<std::input_iterator_tag, Type>
-	{
-	public:
-
-		typedef std::forward_iterator_tag iterator_category;
-		iterator(Type* aPtr) : m_pPtr(aPtr) { }
-		iterator operator++() { iterator i = *this; ++m_pPtr; return i; }
-		iterator operator++(int junk) { ++m_pPtr; return *this; }
-		Type& operator*() { return *m_pPtr; }
-		Type& operator*()const { return *m_pPtr; }
-		Type* operator->() { return m_pPtr; }
-		Type* operator->()const { return m_pPtr; }
-		bool operator==(const iterator& rhs)const { return m_pPtr == rhs.m_pPtr; }
-		bool operator!=(const iterator& rhs)const { return m_pPtr != rhs.m_pPtr; }
-	private:
-		Type*  m_pPtr;
-	};
-	class reverse_iterator :public std::iterator<std::random_access_iterator_tag, Type> 
-	{
 	
-	};
+	
 
 
 	CVector();
     ~CVector()
 	{
+		delete[]m_aArray;
+		m_
 	}
 
+	reverse_iterator rbegin() 
+	{
+		return reverse_iterator(m_aArray+(m_count-1));
+	}
 
 	iterator begin()
 	{
