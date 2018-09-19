@@ -23,10 +23,15 @@ public:
 		return *(m_pPtr + ix);
 	}
 
-	bool operator==(const iterator& rhs)const { return m_pPtr == rhs.m_pPtr; }
+	bool operator==(const iterator& rhs)const;
 	bool operator!=(const iterator& rhs)const { return m_pPtr != rhs.m_pPtr; }
 private:
 	ItType*  m_pPtr;
 };
+template<class Type>
+bool iterator<Type>::operator==(const iterator& rhs)const 
+{
+	 return m_pPtr == rhs.m_pPtr; 
+}
 #endif // !ITERATOR_H
 

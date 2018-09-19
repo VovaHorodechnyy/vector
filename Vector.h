@@ -13,7 +13,7 @@ class CVector
 {
 	private:
 
-		const size_t DEFAULT_SIZE_ARRAY = 100;
+		const static size_t DEFAULT_SIZE_ARRAY = 100;
 		const size_t MAX_SIZE=64936;
 		size_t m_current_sizem;
 		size_t m_count;
@@ -36,8 +36,43 @@ class CVector
 	CVector();
     ~CVector()
 	{
+		destroy();
+	}
+	void destroy() 
+	{
 		delete[]m_aArray;
-		m_
+		m_aArray = nullptr;
+	}
+	void new_memory(size_t size= DEFAULT_SIZE_ARRAY)
+	{
+		new_mem:
+		if (m_aArray == nullptr) 
+		{
+			m_aArray = new Type[size];
+			m_current_sizem = size;
+		}
+			
+		else
+		{
+			destroy();
+			goto new_mem;
+		}
+	}
+
+	void assign(size_t size,const Type& value) 
+	{
+		new_memory(size);
+		for (size_t i = 0; i < size; i++)
+		{
+			m_aArray[m_count] = value;
+		}
+	}
+
+	Type& at(size_t pos) 
+	{
+		if (!(pos < size()))
+			throw new out_of_range("out of range");
+		return m_aArray[pos];
 	}
 
 	reverse_iterator rbegin() 
@@ -74,7 +109,7 @@ class CVector
 template<class Type>
 CVector<Type>::CVector() :m_count(0), m_current_sizem(DEFAULT_SIZE_ARRAY)
 {
-	m_aArray = new Type[DEFAULT_SIZE_ARRAY];
+	new_memory();
 
 }
 template<class Type>

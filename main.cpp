@@ -35,23 +35,23 @@ https://gist.github.com/jeetsukumaran/307264
 	std::cout << "capacity: " << varr.capacity() << std::endl;
 //	CVector<int>:: k = varr.();
 	//std::cout << *k;
-	std::vector<int >qwe = { 12,2,3,5 };
-	std::vector<int >::iterator i = qwe.begin();
-	i[1] = 5;
-	//std::cout << qwe.begin()[2];
-	CVector<int>::iterator it= varr.begin();
-	std::vector<int> asd = { 1,2,3 };
-	auto it_const = asd.rbegin();
-	std::for_each(varr.begin(), varr.end(), [](int i) 
+	
+	std::vector<int> aqq;
+	aqq.push_back(12);
+	aqq.push_back(22);
+	aqq.push_back(142);
+	aqq.push_back(112);
+	aqq.push_back(1222);
+//	aqq.assign(aqq.begin()+3,aqq.end());
+	for (int a : aqq) 
 	{
-		std::cout << i;
-	});
-	//std::cout << it[1];
-	//it[1] = 5;
-	//std::cout << it[1];
-	CVector<int>::reverse_iterator c_it = varr.rbegin();
-	std::cout<< std::endl;
-	++c_it;
-	std::cout << *(c_it)<<std::endl;
+		std::cout << a << std::endl;
+	}
+	std::cout << "cap: " << aqq.capacity()<<std::endl;
+	varr.assign(5, 1);
+	for (int a : aqq)
+	{
+		std::cout << a << std::endl;
+	}
 //	varr.
 }
