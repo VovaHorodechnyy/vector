@@ -1,8 +1,9 @@
 #ifndef VECTOR_H
 #define VECTOR_H
-//https://gist.github.com/jeetsukumaran/307264
+
 
 #include<stdexcept>
+#include<mutex>
 #include<iterator>
 #include"itearator.h"
 #include"reverse_iterator.h"
@@ -12,17 +13,18 @@ template<class Type>
 class CVector
 {
 	private:
-
+		std::recursive_timed_mutex m_pMtx;
 		const static size_t DEFAULT_SIZE_ARRAY = 100;
-		const size_t MAX_SIZE=64936;
+		const static size_t MAX_SIZE=64936;
 		size_t m_current_sizem;
 		size_t m_count;
 		Type*m_aArray;
 		
+		void destroy();
+		void new_memory(const size_t&size = DEFAULT_SIZE_ARRAY);
+
 	public:
-//	typedef const_iterator const_iterator;
-	//typedef iterator iterator;
-	//typedef iterator<Type> iterator;
+
 	using const_iterator = const_iterator<Type>;
 	using iterator = iterator<Type>;
 	using  const_reverse_iterator = reverse_iterator<const Type>;
@@ -34,80 +36,158 @@ class CVector
 
 
 	CVector();
-    ~CVector()
-	{
-		destroy();
-	}
-	void destroy() 
-	{
-		delete[]m_aArray;
-		m_aArray = nullptr;
-	}
-	void new_memory(size_t size= DEFAULT_SIZE_ARRAY)
-	{
-		new_mem:
-		if (m_aArray == nullptr) 
-		{
-			m_aArray = new Type[size];
-			m_current_sizem = size;
-		}
-			
-		else
-		{
-			destroy();
-			goto new_mem;
-		}
-	}
-
-	void assign(size_t size,const Type& value) 
-	{
-		new_memory(size);
-		for (size_t i = 0; i < size; i++)
-		{
-			m_aArray[m_count] = value;
-		}
-	}
-
-	Type& at(size_t pos) 
-	{
-		if (!(pos < size()))
-			throw new out_of_range("out of range");
-		return m_aArray[pos];
-	}
-
-	reverse_iterator rbegin() 
-	{
-		return reverse_iterator(m_aArray+(m_count-1));
-	}
-
-	iterator begin()
-	{
-		return iterator(m_aArray);
-	}
-
-	iterator end()
-	{
-		return iterator(m_aArray + m_count);
-	}
-
-	const_iterator cbegin() const
-	{
-		return const_iterator(m_aArray);
-	}
-
-	const_iterator cend() const
-	{
-		return const_iterator(m_aArray + m_count);
-	}
+	~CVector();
+	Type* data()noexcept;
+	Type&back();
+	Type&front();
+	void assign(size_t &size, const Type& value);
+	Type& at(const size_t& pos);
+	Type&operator[](const size_t& );
+	Type&operator[](const size_t& )const;
+	const_reverse_iterator rcend();
+	const_reverse_iterator rcbegin();
+    reverse_iterator rend()const;
+    reverse_iterator rbegin() const;
+    iterator begin()const;
+    iterator end()const;
+    const_iterator cbegin() const;
+    const_iterator cend()const ;
 	bool is_empty();
 	size_t size();
 	size_t max_size();
 	size_t capacity();
-	void reserve(size_t);
+	void reserve(const size_t&);
 	void push_back(const Type& value);
 };
+
 template<class Type>
-CVector<Type>::CVector() :m_count(0), m_current_sizem(DEFAULT_SIZE_ARRAY)
+Type*CVector<Type>::data()noexcept 
+{
+	return &m_aArray;
+}
+
+template<class Type>
+Type& CVector<Type>::back() 
+{
+	return m_aArray + (m_count-1);
+}
+
+template<class Type>
+Type& CVector<Type>::front() 
+{
+	return m_aArray[0];
+}
+
+template<class Type>
+Type& CVector<Type>::operator[](const size_t& pos) 
+{
+	return m_aArray[pos];
+}
+
+template<class Type>
+Type& CVector<Type>::operator[](const size_t& pos) const
+{
+	return m_aArray[pos];
+}
+
+template<class Type>
+void CVector<Type>::destroy()
+{
+	delete[]m_aArray;
+	m_aArray = nullptr;
+}
+
+template<class Type>
+void CVector<Type>::new_memory(const size_t& size = DEFAULT_SIZE_ARRAY)
+{
+	new_mem:
+	if (m_aArray == nullptr)
+	{
+		m_aArray = new Type[size];
+		m_current_sizem = size;
+	}
+
+	else
+	{
+		destroy();
+		goto new_mem;
+	}
+}
+
+template<class Type>
+typename CVector<Type>::const_reverse_iterator CVector<Type>::rcend()
+{
+	return const_reverse_iterator(m_aArray);
+}
+
+template<class Type>
+typename CVector<Type>::const_reverse_iterator CVector<Type>::rcbegin()
+{
+	return const_reverse_iterator(m_aArray + (m_count - 1));
+}
+
+template<class Type>
+CVector<Type>::~CVector() 
+{
+	destroy();
+}
+
+template<class Type>
+void CVector<Type>::assign(size_t& size, const Type& value)
+{
+	new_memory(size);
+	for (size_t i = 0; i < size; i++)
+	{
+		m_aArray[m_count] = value;
+	}
+}
+
+template<class Type>
+Type& CVector<Type>::at(const size_t& pos) 
+{
+	if (!(pos < size()))
+		throw new std::out_of_range("out of range");
+	return m_aArray[pos];
+}
+
+template<class Type>
+typename CVector<Type>::reverse_iterator CVector<Type>::rend()const
+{
+    return reverse_iterator(m_aArray);
+}
+
+template <class Type>
+typename CVector<Type>::reverse_iterator CVector<Type>::rbegin()const
+{
+   return reverse_iterator(m_aArray+(m_count-1));
+}
+
+template <class Type>
+typename CVector<Type>::iterator CVector<Type>::begin()const
+{
+    return iterator(m_aArray);
+}
+
+template<class Type>
+typename CVector<Type>::iterator CVector<Type>::end()const
+{
+    return iterator(m_aArray + m_count);
+}
+
+template <class Type>
+typename CVector<Type>::const_iterator CVector<Type>::cbegin()const
+{
+     return const_iterator(m_aArray);
+}
+
+template<class Type>
+typename CVector<Type>::const_iterator CVector<Type>::cend()const
+{
+    return const_iterator(m_aArray);
+}
+
+template<class Type>
+CVector<Type>::CVector() : m_current_sizem(DEFAULT_SIZE_ARRAY),m_count(0)
 {
 	new_memory();
 
@@ -138,7 +218,7 @@ size_t CVector<Type>::max_size()
 }
 
 template<class Type>
-void CVector<Type>::reserve(size_t size)
+void CVector<Type>::reserve(const size_t& size)
 {
 	if (size > max_size())
 		throw std::length_error("length was less than capacity");
@@ -159,6 +239,7 @@ void CVector<Type>::reserve(size_t size)
 template<class Type>
 void CVector<Type>::push_back(const Type& value)
 {
+	m_pMtx.lock();
 	if (m_count == m_current_sizem)
 	{
 		Type*tmp = new Type[m_count + 1];
@@ -178,7 +259,8 @@ void CVector<Type>::push_back(const Type& value)
 		m_aArray[m_count] = value;
 		++m_count;
 	}
+	m_pMtx.unlock();
 
 }
-#endif  VECTOR_H// !VECTOR_H
+#endif  // !VECTOR_H
 
